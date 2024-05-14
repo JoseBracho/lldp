@@ -60,4 +60,5 @@ class Devices:
 
             
 if __name__ == '__main__':
-    Devices().searchDevice()
+    while True:
+        Devices().searchDevice()
