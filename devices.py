@@ -44,10 +44,10 @@ class Devices:
         return devices
     
     def searchDevice(self):
-        nodos = self.manager.find_documents('Nodo')
-        infoDevice = self.manager.find_documents('InfoDevice')
-        vlanAdmin = self.manager.find_documents('VlanAdmin')
-        loopback = self.manager.find_documents('Loopback')
+        nodos = self.manager.find_documents('nodos')
+        infoDevice = self.manager.find_documents('infodevices')
+        vlanAdmin = self.manager.find_documents('vlanAdmins')
+        loopback = self.manager.find_documents('loopbacks')
         nodos = getNodos(nodos)
         infoVendor = getInfoVendor(infoDevice)
         vlan_admin = self.getIpactive(vlanAdmin, 'ip_admin', DeviceModel, nodos, infoVendor)
