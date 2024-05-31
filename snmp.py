@@ -39,4 +39,5 @@ class SNMP:
         return response
 
 if __name__ == '__main__':
-    snmp = SNMP('10.16.0.1')
+    snmp = SNMP('10.16.4.2')
+    print(snmp.getNameValue())

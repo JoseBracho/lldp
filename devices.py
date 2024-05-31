@@ -54,9 +54,9 @@ class Devices:
         loopback_admin = self.getIpactive(loopback, 'ip_loopback', DeviceModel, nodos, infoVendor)
         clean_ip = cleanIP(vlan_admin, loopback_admin)
         for devices in clean_ip:
-            existing_document  = self.manager.find_documents_one('Device', {'hostname': devices.get('hostname')})
+            existing_document  = self.manager.find_documents_one('devices', {'hostname': devices.get('hostname')})
             if not existing_document:
-                self.manager.insert_document('Device', devices)
+                self.manager.insert_document('devices', devices)
 
             
 if __name__ == '__main__':
