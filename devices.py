@@ -18,7 +18,7 @@ class Devices:
         devices = []
         for document in documents:
             segments = document.get(field).split('0/')[0]
-            ips = [segments + str(i) for i in range(1, 2)]
+            ips = [segments + str(i) for i in range(1, 41)]
             active_ips = [ip for ip in ips if subprocess.call(["ping", "-c", "2", ip], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0]
             for ip in active_ips:
                 community = ''
