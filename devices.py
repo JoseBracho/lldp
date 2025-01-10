@@ -1,7 +1,7 @@
-from bson import ObjectId
+import os
 import subprocess
+from bson import ObjectId
 from dotenv import load_dotenv
-
 from db.MongoDB import MongoDBManager
 from models.Device import DeviceModel
 from helpers.getdata import getNodos, getInfoVendor, cleanIP
@@ -18,11 +18,16 @@ class Devices:
         devices = []
         for document in documents:
             segments = document.get(field).split('0/')[0]
-            ips = [segments + str(i) for i in range(1, 21)]
+            ips = [segments + str(i) for i in range(1, 2)]
             active_ips = [ip for ip in ips if subprocess.call(["ping", "-c", "2", ip], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0]
             for ip in active_ips:
+                community = ''
+                if int(ip.split('.')[-1]) > 29:
+                    community = os.getenv('COMMUNITY_SNMP_OLT')
+                else:
+                    community = os.getenv('COMMUNITY_SNMP')
                 try:
-                    snmp = SNMP(ip)
+                    snmp = SNMP(ip, community)
                     nameDevice = snmp.getNameValue()
                     infovendor = snmp.getVendor()
                     if len(nameDevice) > 0 and len(infovendor) > 0:

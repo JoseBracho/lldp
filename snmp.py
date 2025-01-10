@@ -2,7 +2,7 @@ from pysnmp.entity.rfc3413.oneliner import cmdgen
 
 class SNMP:
     
-    def __init__(self, host, community = 'NOC-MBO-ATK-SOL') -> None:
+    def __init__(self, host, community) -> None:
         self._host = host
         self._SYSNAME = '1.3.6.1.2.1.1.5.0'
         self._VENDOR = '1.3.6.1.2.1.1.1.0'
