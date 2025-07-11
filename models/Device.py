@@ -1,7 +1,7 @@
 from bson import ObjectId
 
 class DeviceModel:
-    def __init__(self, hostname: str, ip_admin: str, id_nodo: ObjectId, id_info_device = ''):
+    def __init__(self, ip_admin: str, id_nodo: ObjectId, hostname = '',   id_info_device = ''):
         self.hostname = hostname
         self.ip_admin = ip_admin
         self.id_nodo = id_nodo

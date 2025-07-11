@@ -4,7 +4,7 @@ from bson import ObjectId
 from dotenv import load_dotenv
 from db.MongoDB import MongoDBManager
 from models.Device import DeviceModel
-from helpers.getdata import getNodos, getInfoVendor, cleanIP
+from helpers.getdata import getNodos, getInfoVendor
 from snmp import SNMP
 
 load_dotenv()
@@ -12,13 +12,13 @@ load_dotenv()
 class Devices:
 
     def __init__(self) -> None:
-        self.manager =  MongoDBManager('SDN')
+        self.manager =  MongoDBManager('LLDP')
 
     def getIpactive(self, documents, field, DeviceModel, nodos, info):
         devices = []
         for document in documents:
             segments = document.get(field).split('0/')[0]
-            ips = [segments + str(i) for i in range(1, 41)]
+            ips = [segments + str(i) for i in range(1, 115)]
             active_ips = [ip for ip in ips if subprocess.call(["ping", "-c", "2", ip], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0]
             for ip in active_ips:
                 community = ''
@@ -37,13 +37,18 @@ class Devices:
                             vendor = vendor[0]
                             for nodo in nodos:
                                 if nickname in nodo:
-                                    model = DeviceModel(nameDevice, ip, ObjectId(nodo[0]), ObjectId(vendor[0]))
+                                    model = DeviceModel(ip, ObjectId(nodo[0]), nameDevice,  ObjectId(vendor[0]))
                                     devices.append(model.to_document())
                         else:
                             for nodo in nodos:
                                 if nickname in nodo:
-                                    model = DeviceModel(nameDevice, ip, ObjectId(nodo[0]))
-                                    devices.append(model.to_document())                            
+                                    model = DeviceModel(ip, ObjectId(nodo[0]), nameDevice)
+                                    devices.append(model.to_document())                  
+                    else:
+                        for nodo in nodos:
+                                if nickname in nodo:
+                                    model = DeviceModel(ip, ObjectId(nodo[0]))
+                                    devices.append(model.to_document())          
                 except Exception as e:
                     print(e)
         return devices
@@ -57,13 +62,17 @@ class Devices:
         infoVendor = getInfoVendor(infoDevice)
         vlan_admin = self.getIpactive(vlanAdmin, 'ip_admin', DeviceModel, nodos, infoVendor)
         loopback_admin = self.getIpactive(loopback, 'ip_loopback', DeviceModel, nodos, infoVendor)
-        clean_ip = cleanIP(vlan_admin, loopback_admin)
-        for devices in clean_ip:
-            existing_document  = self.manager.find_documents_one('devices', {'hostname': devices.get('hostname')})
-            if not existing_document:
-                self.manager.insert_document('devices', devices)
+        clean_ip = [vlan_admin, loopback_admin]
+        for i in clean_ip:
+            for devices in i:
+                existing_document  = self.manager.find_documents_one('devices', {'ip_admin': devices.get('ip_admin')})
+                if not existing_document:
+                    self.manager.insert_document('devices', devices)
 
             
 if __name__ == '__main__':
     while True:
-        Devices().searchDevice()
+        try:
+            Devices().searchDevice()
+        except Exception as e:
+            print(e)
